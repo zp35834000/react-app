@@ -75,6 +75,90 @@ function CustomApp(){
   )
 }
 
+// function Colock(props1){
+//   return (
+//     <div>
+//       <h1>Hello, World</h1>
+//       <h2>It is {props1.date.toLocaleTimeString()}</h2>
+//     </div>
+//   )
+// }
+
+function FormatterDate(props){
+  return <h2>It is {props.date.toLocaleTimeString()}</h2>
+}
+
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+    // setInterval("var a=1;var b=2;c=a+b;alert(c);",1000);
+  }
+
+  componentDidMount() {
+    this.timerId = setInterval(
+      () =>this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    })
+  }
+
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, World</h1>
+        <FormatterDate date= {this.state.date}/>
+      </div>
+    )
+  }
+}
+
+function App1(){
+  return (
+    <div>
+      <Clock />
+      <Clock />
+      <Clock />
+    </div>
+  )
+}
+
+class Toggle extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {isToggleOn: true};
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }))
+  }
+
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+        {this.state.isToggleOn ? 'ON' : 'OFF'}
+      </button>
+    )
+  }
+}
+
+ReactDOM.render(
+  <Toggle />,
+  document.getElementById('root')
+)
 const commentAuthor = {
   author: {
     name: 'authorName',
@@ -82,8 +166,9 @@ const commentAuthor = {
   },
   text: 'commentText'
 }
-ReactDOM.render(
-  <Comment  author={commentAuthor.author} text={commentAuthor.text}/>,
-  document.getElementById('root')
-);
+// ReactDOM.render(
+//   <Comment  author={commentAuthor.author} text={commentAuthor.text}/>,
+//   document.getElementById('root')
+// );
+
 registerServiceWorker();
