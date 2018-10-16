@@ -220,12 +220,222 @@ class LoginControl extends React.Component {
     )
   }
 
-
   
 }
 
+
+class ProductCategoryRow extends React.Component {
+  render() {
+    return <tr><th colSpan="2">{this.props.category}</th></tr>;
+  }
+}
+
+class ProductRow extends React.Component {
+  render() {
+    var name = this.props.product.stocked ?
+      this.props.product.name :
+      <span style={{color: 'red'}}>
+        {this.props.product.name}
+      </span>;
+    return (
+      <tr>
+        <td>{name}</td>
+        <td>{this.props.product.price}</td>
+      </tr>
+    );
+  }
+}
+
+class ProductTable extends React.Component {
+  render() {
+    var rows = [];
+    var lastCategory = null;
+    this.props.products.forEach(function(product) {
+      if (product.category !== lastCategory) {
+        rows.push(<ProductCategoryRow category={product.category} key={product.category} />);
+      }
+      rows.push(<ProductRow product={product} key={product.name} />);
+      lastCategory = product.category;
+    });
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    );
+  }
+}
+
+class SearchBar extends React.Component {
+  render() {
+    return (
+      <form>
+        <input type="text" placeholder="Search..." />
+        <p>
+          <input type="checkbox" />
+          {' '}
+          Only show products in stock
+        </p>
+      </form>
+    );
+  }
+}
+
+class FilterableProductTable extends React.Component {
+  render() {
+    return (
+      <div>
+        <SearchBar />
+        <ProductTable products={this.props.products} />
+      </div>
+    );
+  }
+}
+
+
+var PRODUCTS = [
+  {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
+  {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
+  {category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
+  {category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
+  {category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
+  {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+];
+
+
+class AutoFocusTextInput extends React.Component {
+  constructor(props){
+    super(props);
+    this.textInput = React.createRef();
+  }
+
+  componentDidMount() {
+    this.textInput.current.foucsTextInput();
+  }
+
+  render(){
+    return(
+      <CustomTextInput ref={this.textInput}></CustomTextInput>
+    )
+  }
+}
+
+class CustomTextInput extends React.Component {
+  constructor(props){
+    super(props);
+    this.textInput = React.createRef();
+    this.foucsTextInput = this.foucsTextInput.bind(this);
+  }
+
+  foucsTextInput(){
+    this.textInput.current.focus();
+    console.log('触发focus事件');
+  }
+
+  render(){
+    return (
+      <div>
+        <input type="text" ref={this.textInput}></input>
+        <input type="button" value="Focus the text input" onClick={this.foucsTextInput}></input>
+      </div>
+    )
+  }
+}
+
+class NameForm extends React.Component{
+  constructor(props) {
+    super(props);
+    this.input = React.createRef();
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.input.current.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name: 
+          {/* <input type="text" ref={(input) => this.input = input}></input> */}
+          <input type="text" defaultValue="Bob" ref={this.input}></input>
+        </label>
+        <input type="submit" value="Submit"></input>
+      </form>
+    )
+  }
+}
+
+
+class FileInput extends React.Component{
+  constructor(props){
+    super(props);
+    this.fileInput = React.createRef();
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(event){
+    event.preventDefault();
+    alert(`Selected file - ${this.fileInput.current.files[0].name}`);
+  }
+
+  render(){
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Upload file:
+          <input type="file" ref={this.fileInput}></input>
+          <br></br>
+          <button type="submit" >Submit</button>
+        </label>
+      </form>
+    )
+  }
+}
+
+
+class FileInput1 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  handleSubmit(event) {
+    event.preventDefault();
+    alert(
+      `Selected file - ${this.fileInput.files[0].name}`
+    );
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Upload file:
+          <input
+            type="file"
+            ref={input => {
+              this.fileInput = input;
+            }}
+
+          />
+
+        </label>
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+    );
+  }
+}
+
 ReactDOM.render(
-  <LoginControl  />,
+  <FileInput />,
   document.getElementById('root')
 )
 const commentAuthor = {
