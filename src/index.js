@@ -4,7 +4,16 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { Router, Route, Link } from 'react-router';
+import store from './redux'
+import {
+  addTodo,
+  toggleTodo,
+  setVisibilityFilter
+} from './redux/action'
 
+store.dispatch(addTodo('Learn about actions'));
+
+console.log(store.getState());
 function formatName(user){
   return user.firstName + ' ' + user.lastName;
 }
@@ -219,8 +228,175 @@ class LoginControl extends React.Component {
       </div>
     )
   }
-
   
+}
+
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li key={number.toString()}>{number}</li>
+  )
+  return (
+    <ul>{listItems}</ul>
+  )
+}
+
+const numbers = [1, 2, 3, 4, 5];
+
+function BoilingVerdict(props) {
+  if(props.celsius >= 100){
+    return <p> 水会烧开</p>;
+  }
+  return <p>水不会烧开</p>
+}
+
+const scaleName = {
+  c: 'Celsius',
+  f: 'Fahrenheit'
+}
+
+function toCelsius(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toFahrenheit(celsius) {
+  return (celsius * 9 / 5) + 32;
+}
+
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if (Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+
+class TemperatureInput extends React.Component {
+  constructor(props){
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    this.props.onTemperatureChange(e.target.value);
+  }
+
+  render(){
+    const temperature = this.props.temperature;
+    const scale = this.props.scale;
+    return(
+      <fieldset>
+        <legend>Enter temperature in {scaleName[scale]}</legend>
+        <input value={temperature} onChange={this.handleChange}></input>
+        {/* <BoilingVerdict celsius={parseFloat(temperature)}></BoilingVerdict> */}
+      </fieldset>
+    )
+  }
+
+}
+
+class Calculator extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {temperature: '', scale: 'c'};
+    this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
+    this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
+  }
+
+  handleCelsiusChange(temperature) {
+    this.setState({temperature: temperature, scale: 'c'})
+  }
+
+  handleFahrenheitChange(temperature) {
+    this.setState({temperature: temperature, scale: 'f'})
+  }
+
+
+  render() {
+    const scale = this.state.scale;
+    const temperature = this.state.temperature;
+    const celsius = scale === 'f' ? tryConvert(temperature, toCelsius) : temperature;
+    const fahrenheit = scale === 'c' ? tryConvert(temperature, toFahrenheit) : temperature;
+
+    return (
+      <div>
+        <TemperatureInput 
+          scale="c"
+          temperature={celsius}
+          onTemperatureChange={this.handleCelsiusChange}>
+        </TemperatureInput>
+
+        <TemperatureInput 
+          scale="f"
+          temperature={fahrenheit}
+          onTemperatureChange={this.handleFahrenheitChange}>>
+        </TemperatureInput>
+
+        <BoilingVerdict
+          celsius={parseFloat(celsius)} />
+      </div>
+    )
+  }
+}
+
+function FancyBorder(props) {
+  return (
+    <div className={props.color}>
+      {props.children}
+    </div>
+  )
+}
+
+function WelcomeDialog() {
+  return (
+    <FancyBorder  color="blue">
+      <h1 className="Dialog-title">
+        Welcome
+      </h1>
+      <p className="Dialog-message">
+        Thank you for visiting our spacecraft!
+      </p>
+    </FancyBorder>
+  )
+}
+
+
+class ListOfWords extends React.Component {
+  render() {
+    return <div>{this.props.words.join(',')}</div>;
+  }
+}
+
+class WordAdder extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      words: ['marklar']
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    // This section is bad style and causes a bug
+    const words = this.state.words;
+    words.push('marklar');
+    this.setState({words: words});
+    // this.setState(prevState => ({
+    //   words: prevState.words.concat(['marklav'])
+    // }))
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.handleClick} > addButton</button>
+        <ListOfWords words={this.state.words} />
+      </div>
+    );
+  }
 }
 
 
@@ -435,7 +611,7 @@ class FileInput1 extends React.Component {
 }
 
 ReactDOM.render(
-  <FileInput />,
+  <WordAdder  />,
   document.getElementById('root')
 )
 const commentAuthor = {
